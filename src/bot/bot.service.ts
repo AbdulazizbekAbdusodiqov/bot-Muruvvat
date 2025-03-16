@@ -68,7 +68,7 @@ export class BotService {
 
 
 
-  async seePatients(ctx: Context, page:number = 0) {
+  async seePatients(ctx: Context, page:number = 0, first:boolean) {
     const user_id = ctx.from?.id;
     const findUser = await this.botModel.findByPk(user_id);
   
@@ -148,11 +148,12 @@ export class BotService {
           }
         });
       }
-
-      await ctx.reply(BackMain[language], {
-        parse_mode: "HTML",
-        reply_markup: mainMenuKeys[language] 
-      });
+      if(first){
+        await ctx.reply(BackMain[language], {
+          parse_mode: "HTML",
+          reply_markup: mainMenuKeys[language] 
+        });
+      }
       
     } else {
       await ctx.editMessageText(startMessage, { reply_markup: selectLangKeys });

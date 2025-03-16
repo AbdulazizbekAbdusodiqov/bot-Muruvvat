@@ -180,15 +180,16 @@ export class BotUpdate {
   @UseGuards(ChannelSubscriptionGuard)
   @Action("view_patients_for_generous")
   async onSeePatients(@Ctx() ctx: Context) {
-  
-    await this.botService.seePatients(ctx)
+    const first = true
+    await this.botService.seePatients(ctx, 0, first)
   }
   
   @UseGuards(ChannelSubscriptionGuard)
   @Action(/^view_patients_for_generous=\d+/)
   async seePatients(@Ctx() ctx: Context) {
     const page = ctx.callbackQuery!["data"].split("=")[1]
-    await this.botService.seePatients(ctx, +page)
+    const first = false
+    await this.botService.seePatients(ctx, +page, first)
   }
   
   
