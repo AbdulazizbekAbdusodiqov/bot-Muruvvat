@@ -16,6 +16,7 @@ import { Admin } from "./models/admin.model";
 import { RequestPatient } from "./models/request.model";
 import { patientMenuKeys } from "./language_keys/patient.keybord";
 import { AnnounceAnswer } from "./models/announce_answer";
+import { text } from "stream/consumers";
 
 @Injectable()
 export class BotService {
@@ -39,7 +40,8 @@ export class BotService {
         user_id,
         first_name: ctx.from?.first_name,
         last_name: ctx.from?.last_name,
-        username:ctx.from?.username
+        username:ctx.from?.username,
+        last_state:"first_start"
       })
       await ctx.reply(startMessage, { reply_markup: selectLangKeys });
     }else{
@@ -66,7 +68,7 @@ export class BotService {
 
 
 
-  async seePatients(ctx: Context) {
+  async seePatients(ctx: Context, page:number = 0) {
     const user_id = ctx.from?.id;
     const findUser = await this.botModel.findByPk(user_id);
   
@@ -76,44 +78,76 @@ export class BotService {
       const requests = await this.requestPatientModel.findAll();
   
       if (patients.length === 0) {
-        await ctx.reply(language === 'uz' ? "Sabrli foydalanuvchilar topilmadi." : "Пациенты не найдены.");
+        await ctx.reply(language === 'uz' ? "Sabrli foydalanuvchilar topilmadi." : "Терпеливый не найдены.");
         return;
       }
   
       const monthsUz = ["Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun", "Iyul", "Avgust", "Sentabr", "Oktabr", "Noyabr", "Dekabr"];
       const monthsRu = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
   
-      let message = language === 'uz' ? "Sabrli foydalanuvchilar va ularning murojaatlari:\n" : "Пациенты и их обращения:\n";
+      let message = language === 'uz' ? "Sabrli foydalanuvchilar va ularning murojaatlari:\n" : "Терпеливый и их обращения:\n";
   
-      patients.forEach(patient => {
-        message += language === 'uz'
-          ? `🧑 ${patient.real_name} (<code>Telefon raqami:</code>  ${patient.phone_number})\n`
-          : `🧑 ${patient.real_name} (<code>номер телефона:</code>  ${patient.phone_number})\n`;
-  
-        const patientRequests = requests.filter(request => request.patient_id === patient.user_id);
-  
-        if (patientRequests.length > 0) {
-          patientRequests.forEach(request => {
-            const date = new Date(request.createdAt);
-            const day = date.getDate();
-            const month = language === 'uz' ? monthsUz[date.getMonth()] : monthsRu[date.getMonth()];
-            const year = date.getFullYear();
-            const hours = date.getHours().toString().padStart(2, '0');
-            const minutes = date.getMinutes().toString().padStart(2, '0');
-  
-            message += language === 'uz'
-              ? `  <b> 📄 Murojaat:</b> ${request.description} (Sana: ${day}-${month}-${year} ${hours}:${minutes})\n`
-              : ` <b>  📄 Обращение:</b>  ${request.description} (Дата: ${day} ${month} ${year} ${hours}:${minutes})\n`;
-          });
-        } else {
-          message += language === 'uz' ? "   Murojaatlar yo'q\n" : "   Обращений нет\n";
+      for (let i = page; i < page + 10; i++) {
+        if (patients.length < i) {
+          break;
         }
-        message += "\n";
-      });
-  
-      await ctx.editMessageText(message,{
-        parse_mode:"HTML"
-      });
+        const patient = patients[i];
+      
+        if (patient) {
+          message += `🧑 ${patient.real_name} (<code>${language === 'uz' ? "Telefon raqami:" : "номер телефона:"}</code> ${patient.phone_number})\n`;
+      
+          const patientRequests = requests.filter(request => request.patient_id === patient.user_id);
+      
+          if (patientRequests.length > 0) {
+            for (const request of patientRequests) {
+              const date = new Date(request.createdAt);
+              const day = date.getDate();
+              const month = language === 'uz' ? monthsUz[date.getMonth()] : monthsRu[date.getMonth()];
+              const year = date.getFullYear();
+              const hours = date.getHours().toString().padStart(2, '0');
+              const minutes = date.getMinutes().toString().padStart(2, '0');
+      
+              message += `  <b>📄 ${language === 'uz' ? "Murojaat" : "Обращение"}:</b> ${request.description} (${language === 'uz' ? "Sana" : "Дата"}: ${day}-${month}-${year} ${hours}:${minutes})\n`;
+            }
+          } else {
+            message += `   ${language === 'uz' ? "Murojaatlar yo'q" : "Обращений нет"}\n`;
+          }
+      
+          message += "\n";
+        }
+      }
+      if(page+10 < patients.length && page!=0 ){
+
+        await ctx.editMessageText(message,{
+          parse_mode:"HTML",
+          reply_markup: {
+            inline_keyboard: [
+              [{text:"Oldinga 🔜", callback_data:`view_patients_for_generous=${page+10}`}],
+              [{text:"Orqaga 🔙", callback_data:`view_patients_for_generous=${page-10}`}]
+            ]
+          }
+        });
+      } else if(page+10 > patients.length && page==0 ){
+
+        await ctx.editMessageText(message,{
+          parse_mode:"HTML",
+          reply_markup: {
+            inline_keyboard: [
+              [{text:"Oldinga 🔜", callback_data:`view_patients_for_generous=${page+10}`}],
+            ]
+          }
+        });
+      } else if(page+10 > patients.length  ){
+        
+        await ctx.editMessageText(message,{
+          parse_mode:"HTML",
+          reply_markup: {
+            inline_keyboard: [
+              [{text:"Orqaga 🔙", callback_data:`view_patients_for_generous=${page-10}`}]
+            ]
+          }
+        });
+      }
 
       await ctx.reply(BackMain[language], {
         parse_mode: "HTML",

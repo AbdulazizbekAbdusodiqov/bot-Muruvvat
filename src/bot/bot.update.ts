@@ -5,13 +5,13 @@ import { InjectModel } from "@nestjs/sequelize";
 import { Bot } from "./models/bot.model";
 import { AdminService } from "./admin.service";
 import { acceptAddresMessage, askNameMessage, askRegionMessage, districtMessage, langMessages, mainMessage, registerMessage, startMessage } from "./language_keys/language";
-import { registerMenuKeys, selectLangKeys } from "./language_keys/keybord";
+import {  selectLangKeys } from "./language_keys/keybord";
 import { backToChanges, backToGenerosMenu, backToRegionsForGenerous, generousMenuKeys, repairKeys, setGenerousLangKeys, settingsForGenerous } from "./language_keys/generous.keybord";
 import { patientMenuKeys } from "./language_keys/patient.keybord";
 import { Admin } from "./models/admin.model";
 import { BOT_NAME } from "./app.constants";
-import {  Scenes as TelegrafScenes } from "telegraf";
-import {RegisterAsGenerous} from "./generous/register.scene"
+// import {  Scenes as TelegrafScenes } from "telegraf";
+// import {RegisterAsGenerous} from "./generous/register.scene"
 import { ButtonsService } from "./register_service/generate_location";
 import { cancelButton, confirmButton, repairMessage, requestGift, requestSent, resAdmin, stuffs, sure, thankMessage } from "./language_keys/messages";
 import { Donation } from "./models/donation.model";
@@ -45,10 +45,10 @@ export class BotUpdate {
     const text = ctx.text || '';
     const payload = text.split(' ')[1] || '';
     const donationId = payload.split('_')[1] || '';
-    console.log(payload);
-    console.log("test");
-    console.log(ctx);
-    console.log(ctx.text);
+    // console.log(payload);
+    // console.log("test");
+    // console.log(ctx);
+    // console.log(ctx.text);
     
     
     if(donationId){
@@ -85,13 +85,14 @@ export class BotUpdate {
 
       }
     }else{
-      console.log("nimadir");
-      
+      if(findUser?.last_state == "first_start"){
+        return
+      }
       if (!findUser || !findUser.role || !findUser.lang) {
         this.botService.start(ctx);
         return;
       }
-  
+
       if(findUser.last_state == "finish"){
 
         switch (findUser.role) {
@@ -138,34 +139,37 @@ export class BotUpdate {
    
   }
 
+  @UseGuards(ChannelSubscriptionGuard)
   @Action(/^closed_/)
   async onClosed(@Ctx() ctx: Context) {
     await this.botService.closedService(ctx);
   }
 
-
+  @UseGuards(ChannelSubscriptionGuard)
   @Hears("Sahiylar")
   async onListGenerous(@Ctx() ctx: Context) {
     await this.adminService.onListGenerous(ctx);
   }
 
+  @UseGuards(ChannelSubscriptionGuard)
   @Hears("Sabrlilar")
   async onListPatients(@Ctx() ctx: Context) {
     await this.adminService.onListPatients(ctx);
   }
 
-
+  @UseGuards(ChannelSubscriptionGuard)
   @Hears("Mijoz arizalari")
   async onListApplications(@Ctx() ctx: Context) {
     await this.adminService.onListApplications(ctx);
   }
 
-
+  @UseGuards(ChannelSubscriptionGuard)
   @Action(/^needhelpconfirm_/)
   async onDonation(@Ctx() ctx: Context) {
     await this.botService.donationService(ctx);
   }
 
+  @UseGuards(ChannelSubscriptionGuard)
   @Action(/^ihelpconfirm_/)
   async onRequest(@Ctx() ctx: Context) {
     console.log("ihelp");
@@ -173,13 +177,26 @@ export class BotUpdate {
     await this.botService.requestService(ctx);
   }
 
-
+  @UseGuards(ChannelSubscriptionGuard)
   @Action("view_patients_for_generous")
   async onSeePatients(@Ctx() ctx: Context) {
   
     await this.botService.seePatients(ctx)
   }
+  
+  @UseGuards(ChannelSubscriptionGuard)
+  @Action(/^view_patients_for_generous=\d+/)
+  async seePatients(@Ctx() ctx: Context) {
+    const page = ctx.callbackQuery!["data"].split("=")[1]
+    await this.botService.seePatients(ctx, +page)
+  }
+  
+  
+  
+  
+  
 
+  @UseGuards(ChannelSubscriptionGuard)
     @Action(/^reply_/)
     async onAdminAnswer(@Ctx() ctx: Context) {
     const user_id = ctx.callbackQuery!["data"].split("_")[1]
@@ -228,7 +245,7 @@ export class BotUpdate {
 
     }
   }
-
+  @UseGuards(ChannelSubscriptionGuard)
   @Action("change_lang")
   async changeLang(@Ctx() ctx: Context) {
     const user_id = ctx.from?.id;
@@ -279,23 +296,25 @@ export class BotUpdate {
     }
   }
   
-
+@UseGuards(ChannelSubscriptionGuard)
 @Hears(["🏠 Asosiy menyu",'🏠 Главное меню'])
 async onBackMain(@Ctx() ctx: Context) {
   await this.onBack(ctx)
 }
-
+  @UseGuards(ChannelSubscriptionGuard)
   @Action('back_to_changes')
   async settingsBack(@Ctx() ctx: Context) {
         await this.settings(ctx)
   }
 
 
+  @UseGuards(ChannelSubscriptionGuard)
   @Command("menadmin")
   async onStop(@Ctx() ctx: Context) {
     await this.adminService.admin(ctx);
   }
 
+  @UseGuards(ChannelSubscriptionGuard)
   @Action(["uz", "ru"])
   async onSelectLang(@Ctx() ctx: any) {
     const guest_id = ctx.from?.id;
@@ -312,6 +331,7 @@ async onBackMain(@Ctx() ctx: Context) {
     }
   }
 
+  @UseGuards(ChannelSubscriptionGuard)
   @Action(['generous','patient'])
   async registerGenerous(@Ctx() ctx: MyContext) {
     const user_id = ctx.from?.id;
@@ -326,24 +346,33 @@ async onBackMain(@Ctx() ctx: Context) {
    
   }
 
+  @UseGuards(ChannelSubscriptionGuard)
   @Action(/^Reapirconfirm/)
   async onConfirm(@Ctx() ctx: Context) {
     await this.adminService.adminConfirm(ctx);
   }
 
+  @UseGuards(ChannelSubscriptionGuard)
   @Action(/^Requestconfirm/)
   async onConfirmReq(@Ctx() ctx: Context) {
     await this.adminService.adminConfirmReq(ctx);
   }
 
+  @UseGuards(ChannelSubscriptionGuard)
   @Action(/^Requestedit_+\d+/)
   async onEditReq(@Ctx() ctx: Context) {
     await this.adminService.adminEditReq(ctx);
   }
 
+  @UseGuards(ChannelSubscriptionGuard)
+  @Action(/^Requestcancel_+\d+/)
+  async onCancelReq(@Ctx() ctx: Context) {
+    await this.adminService.adminCancelReq(ctx);
+  }
+
   
 
-
+  @UseGuards(ChannelSubscriptionGuard)
   @Action("back_to_menu")
   async onBack(@Ctx() ctx: Context) {
     const user_id = ctx.from?.id;
@@ -395,11 +424,13 @@ async onBackMain(@Ctx() ctx: Context) {
     
   }
 
+  @UseGuards(ChannelSubscriptionGuard)
   @On("contact")
   async onContact(@Ctx() ctx: Context) {
    this.botService.onContactUser(ctx)
   }
 
+  @UseGuards(ChannelSubscriptionGuard)
   @Action(/regionPage/)
   async page(@Ctx() ctx: Context) {
     const user_id = ctx.from?.id;
@@ -415,7 +446,7 @@ async onBackMain(@Ctx() ctx: Context) {
       reply_markup: buttons,
     });
   }
-
+  @UseGuards(ChannelSubscriptionGuard)
   @Action(/region=/)
   async callbackHandler(@Ctx() ctx: Context) {
     const user_id = ctx.from?.id;
@@ -444,6 +475,7 @@ async onBackMain(@Ctx() ctx: Context) {
           });
   }
 
+  @UseGuards(ChannelSubscriptionGuard)
   @Action('backToReg')
   async backToRegions(@Ctx() ctx: MyContext) {
     const user_id = ctx.from?.id;
@@ -465,7 +497,7 @@ async onBackMain(@Ctx() ctx: Context) {
   }
 
 
-
+  @UseGuards(ChannelSubscriptionGuard)
   @Action(/districtPage/)
   async pageDistrict(@Ctx() ctx: MyContext) {
     const user_id = ctx.from?.id;
@@ -489,7 +521,7 @@ async onBackMain(@Ctx() ctx: Context) {
       },
     });
   }
-
+  @UseGuards(ChannelSubscriptionGuard)
     @Action(/^district=/)
     async callbackHandlerDistrict(ctx: MyContext) {
       const user_id = ctx.from?.id;
@@ -511,7 +543,7 @@ async onBackMain(@Ctx() ctx: Context) {
         },
       });
     }
-
+    @UseGuards(ChannelSubscriptionGuard)
   @Action('accept')
   async accept(@Ctx() ctx: MyContext) {
     const user_id = ctx.from?.id;
@@ -538,17 +570,17 @@ async onBackMain(@Ctx() ctx: Context) {
   
   }
 
+  @UseGuards(ChannelSubscriptionGuard)
   @Action('repair')
   async repair(@Ctx() ctx: Context) {
     const user_id = ctx.from?.id;
     const findUser = await this.botModel.findByPk(user_id);
-    await this.donationModel.create({generous_id:user_id,last_state:"new"})
+    await this.donationModel.create({generous_id:user_id, last_state:"require", whom:"istalgan odamga"} )
     const language = findUser!.lang === 'uz' ? 'uz' : 'ru';
-    await ctx.editMessageText(repairMessage[language], {
-      reply_markup: repairKeys[language],
-    });
+    await ctx.editMessageText(stuffs[language]);
   }
 
+  @UseGuards(ChannelSubscriptionGuard)
   @Action("helpFor")
   async repairThing(@Ctx() ctx: Context) {
     const user_id = ctx.from?.id;
@@ -561,7 +593,7 @@ async onBackMain(@Ctx() ctx: Context) {
     await ctx.editMessageText(stuffs[language]);
   }
 
-
+  @UseGuards(ChannelSubscriptionGuard)
   @Action(/reject__district/)
   async reject(@Ctx() ctx: Context) {
     // const [, id] = (ctx.update as any).callback_query.data.split('=');
@@ -588,21 +620,32 @@ async onBackMain(@Ctx() ctx: Context) {
   }
 
   
-
+  @UseGuards(ChannelSubscriptionGuard)
   @Action("apply")
   async onAskReq(@Ctx() ctx: Context) {
 
     await this.botService.askReq(ctx);
   }
 
-
+  @UseGuards(ChannelSubscriptionGuard)
   @Action(/^reqaccept/)
   async acceptReq(@Ctx() ctx: Context) {
     await this.botService.acceptReq(ctx)
   }
 
 
+  @UseGuards(ChannelSubscriptionGuard)
+  @Action(/^reject=/)
+  async cancelRepair(@Ctx() ctx: Context) {
+    ctx.editMessageText("Bekor qilindi")
+  }
 
+  @UseGuards(ChannelSubscriptionGuard)
+  @Action(/^reqreject=/)
+  async cancelReqRepair(@Ctx() ctx: Context) {
+    ctx.editMessageText("Bekor qilindi")
+  }
+  @UseGuards(ChannelSubscriptionGuard)
   @Action(/^accept/)
   async acceptRepair(@Ctx() ctx: Context) {
     const findAdmin = await this.adminModel.findOne();
@@ -659,8 +702,8 @@ async onBackMain(@Ctx() ctx: Context) {
       );
   }
 
-  @Action('subscribed')
   @UseGuards(ChannelSubscriptionGuard)
+  @Action('subscribed')
   async subscribed(@Ctx() ctx: Context) {
     const user_id=ctx.from?.id
     const user = await this.botModel.findOne({
@@ -670,6 +713,7 @@ this.onStart(ctx)
   }
 
 
+  @UseGuards(ChannelSubscriptionGuard)
   @On("text")
   async onText(@Ctx() ctx: Context) {
     await this.botService.onText(ctx);

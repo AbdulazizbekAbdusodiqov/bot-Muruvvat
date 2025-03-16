@@ -10,7 +10,8 @@ interface IBotCreationAttr {
   username:string|undefined
   phone_number:string| undefined
   region:string|undefined
-  district:string|undefined
+  district:string|undefined,
+  last_state: string | undefined;
 }
 
 @Table({ tableName: "bot" })

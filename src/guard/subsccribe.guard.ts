@@ -23,6 +23,9 @@ export class ChannelSubscriptionGuard implements CanActivate {
     const currentUser = await this.userRepo.findOne({
       where: { user_id: userId.toString() },
     });
+    if(!currentUser?.dataValues || currentUser.last_state != "finish"){
+      return true
+    }
     const language = currentUser?.lang === 'uz' ? 'uz' : 'ru';
 
     try {
@@ -32,6 +35,7 @@ export class ChannelSubscriptionGuard implements CanActivate {
         const [chatId] = channel;
         try {
           const member = await this.bot.telegram.getChatMember(chatId, userId);
+          console.log(member)
           if (member.status === 'left') {
             inactiveChannels.push(channel); 
           }

@@ -104,6 +104,7 @@ const message=  await this.bot.telegram.sendMessage(String(process.env.CHANNEL_I
   donation.messageId= String(messageId)
   donation.last_state="announce"
   donation.save()
+  ctx.editMessageText("Tasdiqlandi")
 } catch (error) {
   console.log(error);
   
@@ -153,7 +154,7 @@ try {
   requestP.messageId= String(messageId)
   requestP.last_state="announce"
   requestP.save()
-  
+  await ctx.editMessageText("Tasdiqlandi")
 } catch (error) {
   console.log(error.message);
    
@@ -173,6 +174,17 @@ try {
     ctx.reply(`Murojaat matni:<b> ${requestP?.description} </b> Nima deb o'zgartirish kiritmoqchisiz Yozib qoldiring`,{
       parse_mode:"HTML"
     });
+  }
+  }
+
+  async adminCancelReq(ctx: Context) {
+  const application_id = ctx.callbackQuery!["data"].split("_")[1]
+  const requestP = await this.requestPatientModel.findOne({where:{id:application_id}})
+  const admin =await this.adminModel.findOne()
+  if(!admin){
+    console.log("admin topilmadi");
+  }else{
+    ctx.editMessageText("Bekor qilindi ")
   }
   }
 
