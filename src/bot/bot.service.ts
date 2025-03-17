@@ -206,15 +206,6 @@ Nima hadya qilmoqchi? <b>${donation!.dataValues.what}</b>
 Ushbu hadyani qilgan sahiyimizga minnatdorchilik bildiramiz! ❤️
 Ushbu hadya o'z egasini topdi. Sahiy insonimizga minnatdorchilik bildiramiz! ❤️
 
-<b>🇷🇺 Русский</b>
-От кого:
-Имя: ${generous.dataValues.real_name}
-Регион: ${generous.dataValues.region}
-Район: ${generous.dataValues.district}
-Что хочет подарить? <b>${donation!.dataValues.what}</b>
-
-Мы благодарим нашего щедрого дарителя! ❤️
-Этот подарок нашел своего владельца. Мы благодарим нашего щедрого дарителя! ❤️
 `;
 await ctx.telegram.editMessageText(channelId,+messageId!, undefined, messages,{parse_mode:"HTML"});
 await ctx.editMessageText("Xabar muvaffaqiyatli yangilandi!");
@@ -222,9 +213,7 @@ await ctx.editMessageText("Xabar muvaffaqiyatli yangilandi!");
             const message = `<b>🇺🇿 O'zbekcha</b>
             Hadya: <b>${donation}</b>
             Ushbu hadya o'z egasini topdi. Sahovatli insonimizga minnatdorchilik bildiramiz! ❤️
-            <b>🇷🇺 Русский</b>
-            Подарок: <b>${donation}</b>
-            Этот подарок нашел своего владельца. Мы благодарим нашего щедрого дарителя! ❤️`;
+            `;
 
           await ctx.telegram.editMessageText(channelId,+messageId!, undefined, message,{parse_mode:"HTML"});
           await ctx.editMessageText("Xabar muvaffaqiyatli yangilandi!");
@@ -249,15 +238,7 @@ await ctx.editMessageText("Xabar muvaffaqiyatli yangilandi!");
             
             Sahiylarimiz tomonidan yordam ko'rsatildi. Kanalimiz nomidan ushbu insonga minnatdorchilik bildiramiz! ❤️
             
-            <b>🇷🇺 Русский</b>
-            От кого:
-            Имя: ${patient!.dataValues.real_name}
-            Регион: ${patient!.dataValues.region}
-            Район: ${patient!.dataValues.district}
-            Моя просьба? <b>${requestP!.dataValues.description}</b>
-            Мы заранее благодарим наших щедрых людей! ❤️
-            
-            Нашими щедрыми людьми была оказана помощь. От имени нашего канала выражаем благодарность этому человеку! ❤️`
+           `
 
             await ctx.telegram.editMessageText(channelId,+messageId!, undefined, messages,{parse_mode:"HTML"});
           await ctx.editMessageText("Xabar muvaffaqiyatli yangilandi!");
@@ -265,9 +246,7 @@ await ctx.editMessageText("Xabar muvaffaqiyatli yangilandi!");
             const message= `<b>🇺🇿 O'zbekcha</b>
             Murojaatim? <b>${requestP!.dataValues.description}</b>
             Sahovatli insonimiz yordam ko'rsatdilar. Minnatdorchilik bildiramiz! ❤️
-            <b>🇷🇺 Русский</b>
-            Моя просьба? <b>${requestP!.dataValues.description}</b>
-            Наш щедрый человек оказал помощь. Выражаем благодарность! ❤️`
+            `
             await ctx.telegram.editMessageText(channelId,+messageId!, undefined, message,{parse_mode:"HTML"});
             await ctx.editMessageText("Xabar muvaffaqiyatli yangilandi!");
 

@@ -78,17 +78,7 @@ Viloyati: ${generous.dataValues.region}
 Tumani: ${generous.dataValues.district}
 Nima hadya qilmoqchi? <b>${donation.dataValues.what}</b>
 
-Ushbu hadyani qilgan sahiyimizga minnatdorchilik bildiramiz! ❤️
-
-<b>🇷🇺 Русский</b>
-От кого:
-Имя: ${generous.dataValues.real_name}
-Регион: ${generous.dataValues.region}
-Район: ${generous.dataValues.district}
-Что хочет подарить? <b>${donation.dataValues.what}</b>
-
-Мы благодарим нашего щедрого дарителя! ❤️
-`;
+Ushbu hadyani qilgan sahiyimizga minnatdorchilik bildiramiz! ❤️`;
 try {
   const inlineKeyboard = Markup.inlineKeyboard([
     [Markup.button.url('🤲 Ushbu hadyaga muhtojman', `https://t.me/muruvvat_uzbot?start=needhelp_${donation.dataValues.id}`)]
@@ -129,14 +119,6 @@ Viloyati: ${patient.dataValues.region}
 Tumani: ${patient.dataValues.district}
 Murojaatim? <b>${requestP.dataValues.description}</b>
 Sahovatli insonlarimizga oldindan minnatdorchilik bildiramiz! ❤️
-
-<b>🇷🇺 Русский</b>
-От кого:
-Имя: ${patient.dataValues.real_name}
-Регион: ${patient.dataValues.region}
-Район: ${patient.dataValues.district}
-Моя просьба? <b>${requestP.dataValues.description}</b>
-Мы заранее благодарим наших щедрых людей! ❤️
 `;
 
 
