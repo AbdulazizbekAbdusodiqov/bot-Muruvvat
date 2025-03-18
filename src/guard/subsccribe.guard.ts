@@ -35,7 +35,6 @@ export class ChannelSubscriptionGuard implements CanActivate {
         const [chatId] = channel;
         try {
           const member = await this.bot.telegram.getChatMember(chatId, userId);
-          console.log(member)
           if (member.status === 'left') {
             inactiveChannels.push(channel); 
           }
@@ -70,8 +69,7 @@ export class ChannelSubscriptionGuard implements CanActivate {
     
         return false;
     }
-    console.log('Inactive channels:', inactiveChannels);
-console.log('Returning:', inactiveChannels.length === 0);
+
 
       return true;
     } catch (error) {

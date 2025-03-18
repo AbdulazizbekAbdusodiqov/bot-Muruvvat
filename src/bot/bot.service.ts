@@ -31,7 +31,7 @@ export class BotService {
   ) {}
 
   async start(ctx: Context) {
-    console.log("start");
+    // console.log("start");
     
     const user_id = ctx.from?.id;
     const findUser = await this.botModel.findByPk(user_id);
@@ -196,7 +196,6 @@ export class BotService {
           announce.save()
           if(generous){
             const messages = `
-<b>🇺🇿 O'zbekcha</b>
 Kimdan:
 Ismi: ${generous.dataValues.real_name}
 Viloyati: ${generous.dataValues.region}
@@ -210,7 +209,7 @@ Ushbu hadya o'z egasini topdi. Sahiy insonimizga minnatdorchilik bildiramiz! ❤
 await ctx.telegram.editMessageText(channelId,+messageId!, undefined, messages,{parse_mode:"HTML"});
 await ctx.editMessageText("Xabar muvaffaqiyatli yangilandi!");
           }else{
-            const message = `<b>🇺🇿 O'zbekcha</b>
+            const message = `
             Hadya: <b>${donation}</b>
             Ushbu hadya o'z egasini topdi. Sahovatli insonimizga minnatdorchilik bildiramiz! ❤️
             `;
@@ -228,7 +227,6 @@ await ctx.editMessageText("Xabar muvaffaqiyatli yangilandi!");
    
           if(patient){
             const messages = `
-            <b>🇺🇿 O'zbekcha</b>
             Kimdan:
             Ismi: ${patient!.dataValues.real_name}
             Viloyati: ${patient!.dataValues.region}
@@ -243,7 +241,7 @@ await ctx.editMessageText("Xabar muvaffaqiyatli yangilandi!");
             await ctx.telegram.editMessageText(channelId,+messageId!, undefined, messages,{parse_mode:"HTML"});
           await ctx.editMessageText("Xabar muvaffaqiyatli yangilandi!");
           }else{
-            const message= `<b>🇺🇿 O'zbekcha</b>
+            const message= `
             Murojaatim? <b>${requestP!.dataValues.description}</b>
             Sahovatli insonimiz yordam ko'rsatdilar. Minnatdorchilik bildiramiz! ❤️
             `
@@ -597,7 +595,7 @@ await ctx.editMessageText("Xabar muvaffaqiyatli yangilandi!");
           });
           }
           if (user.last_state == "adminRes") {
-            console.log("adminga savol");
+            // console.log("adminga savol");
             
             const findAdmin = await this.adminModel.findOne();
             const messageToAdmin = ctx.message.text;

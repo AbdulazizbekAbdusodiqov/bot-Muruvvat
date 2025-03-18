@@ -26,7 +26,7 @@ export class AdminService {
 
   async admin(ctx: Context) {
     const admin_id = process.env.ADMIN;
-    console.log(admin_id);
+    // console.log(admin_id);
     
     const send_id = ctx.from?.id;
     const findAdmin = await this.adminModel.findByPk(admin_id);
@@ -71,7 +71,6 @@ export class AdminService {
     const language = generous.dataValues.lang === 'uz' ? 'uz' : 'ru';
   
     const messages = `
-<b>🇺🇿 O'zbekcha</b>
 Kimdan:
 Ismi: ${generous.dataValues.real_name}
 Viloyati: ${generous.dataValues.region}
@@ -95,6 +94,7 @@ const message=  await this.bot.telegram.sendMessage(String(process.env.CHANNEL_I
   donation.last_state="announce"
   donation.save()
   ctx.editMessageText("Tasdiqlandi")
+
 } catch (error) {
   console.log(error);
   
@@ -112,7 +112,6 @@ const message=  await this.bot.telegram.sendMessage(String(process.env.CHANNEL_I
 
     const language = patient.dataValues.lang === 'uz' ? 'uz' : 'ru';
     const messages = `
-<b>🇺🇿 O'zbekcha</b>
 Kimdan:
 Ismi: ${patient.dataValues.real_name}
 Viloyati: ${patient.dataValues.region}
@@ -136,7 +135,11 @@ try {
   requestP.messageId= String(messageId)
   requestP.last_state="announce"
   requestP.save()
-  await ctx.editMessageText("Tasdiqlandi")
+  await ctx.editMessageText("Tasdiqlandi✅")
+  await ctx.reply("Asosiy menyuga qaytish uchun <b>🏠 Asosiy menyu</b> tugmasini bosing👇", {
+    ...Markup.keyboard([["🏠 Asosiy menyu"]]).resize(),
+    parse_mode:"HTML"
+  })
 } catch (error) {
   console.log(error.message);
    
@@ -166,7 +169,7 @@ try {
   if(!admin){
     console.log("admin topilmadi");
   }else{
-    ctx.editMessageText("Bekor qilindi ")
+    ctx.editMessageText("Bekor qilindi ❌")
   }
   }
 

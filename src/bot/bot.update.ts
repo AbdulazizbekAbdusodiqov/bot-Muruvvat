@@ -638,13 +638,25 @@ async onBackMain(@Ctx() ctx: Context) {
   @UseGuards(ChannelSubscriptionGuard)
   @Action(/^reject=/)
   async cancelRepair(@Ctx() ctx: Context) {
-    ctx.editMessageText("Bekor qilindi")
+    const user_id = ctx.from?.id;
+    const findUser = await this.botModel.findByPk(user_id);
+    const language = findUser?.lang === 'uz' ? 'uz' : 'ru';
+    await ctx.editMessageText("Bekor qilindi ❌")
+    await ctx.reply(mainMessage[language], {
+      reply_markup: generousMenuKeys[language],
+    })
   }
 
   @UseGuards(ChannelSubscriptionGuard)
   @Action(/^reqreject=/)
   async cancelReqRepair(@Ctx() ctx: Context) {
-    ctx.editMessageText("Bekor qilindi")
+    const user_id = ctx.from?.id;
+    const findUser = await this.botModel.findByPk(user_id);
+    const language = findUser?.lang === 'uz' ? 'uz' : 'ru';
+    ctx.editMessageText("Bekor qilindi ❌")
+    await ctx.reply(mainMessage[language], {
+      reply_markup: patientMenuKeys[language],
+    });
   }
   @UseGuards(ChannelSubscriptionGuard)
   @Action(/^accept/)
